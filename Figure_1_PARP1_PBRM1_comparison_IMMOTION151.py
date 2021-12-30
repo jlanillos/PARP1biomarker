@@ -674,6 +674,7 @@ for arm in list(set(angio['ARM'])):
 
 for i in [col for col in list(dfangio.columns) if 'group' not in col]:
     dfangio['pct_' + i] = 100*(dfangio[i] / dfangio[i].sum())
+dfangio.to_csv('molecular_subtype_tto_parp1ANDpbrm1.csv',sep='\t')
 
 #plotangio = dfangio.set_index('group').T.reset_index()
 #ax = plotangio.plot(x="index", y=1, kind="bar")
