@@ -8,8 +8,8 @@ from lifelines.statistics import logrank_test
 import numpy as np
 from lifelines import CoxPHFitter
 
-c = pd.read_excel('mmc2(4).xlsx') # Table S1 from Motzer et al, Cancer Cell 38, 803–817, December 14, 2020
-df = pd.read_csv('EGAF00004859518/IMmotion151.expression.data.TPM.anon.20201106.csv',sep=',') # Transcript counts matrix from EGAF00004859518
+c = pd.read_excel('Table_S1.xlsx') # Table S1 from Motzer et al, Cancer Cell 38, 803–817, December 14, 2020
+df = pd.read_csv('IMmotion151.expression.data.TPM.anon.csv',sep=',') # Transcript counts matrix from EGAF00004859518
 parp = df.loc[df['symbol'] == 'PARP1'] # Find PARP1 expression
 parp.reset_index(inplace=True)
 d = dict(zip(list(parp.T.index), list(parp.T[0].values)))
@@ -219,7 +219,7 @@ ax[0,1].title.set_text('Sunitinib arm')
 # Set the ticks and ticklabels for all axes, plot and save the figure
 ytickvals = [round(x,1) for x in list(np.arange(0,1.1,0.1))]
 plt.setp(ax, yticks=ytickvals)
-plt.savefig('/mnt/64716603-5b56-4f9a-b195-c11560647a3a/data/IMMOTION151/Figure_1.png', dpi = 1000)
+plt.savefig('/path/to/outdir/Figure_1.png', dpi = 1000)
 cf = cf_aux.copy()
 plt.close()
 #plt.show()
