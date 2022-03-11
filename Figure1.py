@@ -91,7 +91,7 @@ def plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_
     df_r = cf[[group,'PFS_MONTHS','PFS_CENSOR']]
     df_dummy = pd.get_dummies(df_r, drop_first=True)
     colcov = group + '_1'
-    cph.fit(df_dummy, 'PFS_MONTHS', event_col='PFS_CENSOR')
+    cph.fit(df_dummy, 'PFS_MONTHS', event_col='PFS_CENSOR', formula= colcov)
     comp = 'PARP1-univ'
     hr = np.round(cph.summary.T[colcov]['exp(coef)'], decimals=2)
     ci = str(np.round(cph.summary.T[colcov]['exp(coef) lower 95%'], decimals=2)) + '-' + str(np.round(cph.summary.T[colcov]['exp(coef) upper 95%'], decimals=2))
@@ -100,7 +100,7 @@ def plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_
     offset = 0.045
     pval = np.round(cph.summary.T[colcov]['p'], decimals = nr_decimals)
     fs_text = 10
-    box_style=dict(boxstyle='round,pad=0.3', facecolor='wheat', alpha=1, edgecolor='black')
+    box_style=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=1, edgecolor='white')
     ax[0,column].text(0, 0+ offset, 'HR=' + str(hr) + ' (95% CI=' + ci  + '), ' + 'p=' +  str(pval), fontsize=fs_text, bbox=box_style) #dict(facecolor='none', edgecolor='black', boxstyle='square,pad=0.4')
 
     #### Mean Z-score (PARP1 HIGH/ LOW +  PBRM1 Mut/ WT) - CENSORED only
@@ -193,5 +193,5 @@ letterrisk = 'F'
 nr_decimals = 8
 plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_decimals)
 
-plt.savefig('Figure_1_' + gene + '.png', dpi = 500)
+plt.savefig('Figure_1NOBORDER_' + gene + '.png', dpi = 500)
 plt.close()

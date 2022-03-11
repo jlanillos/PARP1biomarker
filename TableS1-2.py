@@ -239,13 +239,12 @@ cols2comp = ['PARP1-High/PBRM1-mut','PARP1-Low/PBRM1-wt','PARP1-Low/PBRM1-mut']
 
 sums = dfangio[groupscol].sum(axis=0)
 
-def computechi(dfangio, group, maincol, i):
+def computechi(dfangio, group, maincol, i, sums):
     contigency = dfangio[[maincol, i]].loc[dfangio['group'] == group]
     contigency = contigency.append(pd.DataFrame(sums[[maincol, i]]).T)
     c, p, dof, expected = chi2_contingency(contigency)
     val = dfangio[i].loc[dfangio['group'] == group].values[0]
-    countingroup = dfangio[[maincol] + cols2comp].loc[dfangio['group'] == group].sum(axis = 1).values[0]
-    pct = '(' + str(int(np.round(100*(val/countingroup)))) + ')'
+    pct = '(' + str(int(np.round(100*(val/sums[i])))) + ')'
     val = str(val)
     if (p<0.00005):
         p = '***'
@@ -259,7 +258,7 @@ def computechi(dfangio, group, maincol, i):
     return(result)
 
 for i in cols2comp:
-    dfangio['comparison_' + i] = dfangio.apply(lambda x: computechi(dfangio, x['group'], maincol, i), axis = 1)
+    dfangio['comparison_' + i] = dfangio.apply(lambda x: computechi(dfangio, x['group'], maincol, i, sums), axis = 1)
 
 # Save to a CSV file which we manually modified to the final format as presented in Supplementary Table2
 dfangio.to_csv('suppTable2.csv',sep='\t', index = None)
