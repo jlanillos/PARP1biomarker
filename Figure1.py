@@ -74,14 +74,14 @@ def plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_
     T = cf['PFS_MONTHS'].loc[cf[group] == 1]
     E = cf['PFS_CENSOR'].loc[cf[group] == 1]
     kmf.fit(T, event_observed=E, label="PARP1-high")
-    kmf.plot_survival_function(ax=ax[0,column], show_censors = True, ci_show=False, color='k', marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[0,column], show_censors = False, ci_show=False, color='k', marker='x', markersize = 1)
     kmfaux = kmf
 
     kmf = KaplanMeierFitter()
     T1 = cf['PFS_MONTHS'].loc[cf[group] == 0]
     E1 = cf['PFS_CENSOR'].loc[cf[group] == 0]
     kmf.fit(T1, event_observed=E1, label="PARP1-low")
-    kmf.plot_survival_function(ax=ax[0,column], show_censors = True, ci_show=False, color='gold', marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[0,column], show_censors = False, ci_show=False, color='gold', marker='x', markersize = 1)
     ax[0,column].legend(fontsize=9, handlelength=1)
     add_at_risk_counts(kmfaux, kmf, ax=ax[1,column], rows_to_show=['At risk'], ypos=addriskyposition)#, size=8)
     #ax[0,0].set_xlabel("At risk", fontsize = xfs, ha = "left")
@@ -98,11 +98,17 @@ def plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_
     pval = cph.summary.T[colcov]['p']
 
     offset = 0.045
-    pval = np.round(cph.summary.T[colcov]['p'], decimals = nr_decimals)
+    pval = cph.summary.T[colcov]['p']
+    if pval < 0.01:
+        pval = 'p<0.01'
+    else:
+        pval = np.round(pval, decimals = nr_decimals)
+        pval = 'p=' + str(pval)
     fs_text = 10
-    box_style=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=1, edgecolor='white')
-    ax[0,column].text(0, 0+ offset, 'HR=' + str(hr) + ' (95% CI=' + ci  + '), ' + 'p=' +  str(pval), fontsize=fs_text, bbox=box_style) #dict(facecolor='none', edgecolor='black', boxstyle='square,pad=0.4')
+    box_style=dict(facecolor='white', alpha=1, edgecolor='black', boxstyle='square,pad=0.4') # boxstyle='round,pad=0.3'
+    #dict(facecolor='none', edgecolor='black', boxstyle='square,pad=0.4')
 
+    ax[0,column].text(0, 0+ offset, 'HR=' + str(hr) + ' (95% CI=' + ci + '), ' + pval, fontsize=fs_text, bbox=box_style)
     #### Mean Z-score (PARP1 HIGH/ LOW +  PBRM1 Mut/ WT) - CENSORED only
     if arm == 'Entire cohort':
         cf = cf_aux.copy()
@@ -122,22 +128,22 @@ def plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_
 
     kmf = KaplanMeierFitter()
     kmf.fit(T, event_observed=E, label="PARP1-high/" + gene + "mut")
-    kmf.plot_survival_function(ax=ax[2,column], show_censors = True, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[2,column], show_censors = False, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
     kmf1 = kmf
 
     kmf = KaplanMeierFitter()
     kmf.fit(T1, event_observed=E1, label="PARP1-high/" + gene + "wt")
-    kmf.plot_survival_function(ax=ax[2,column], show_censors = True, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[2,column], show_censors = False, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
     kmf2 = kmf
 
     kmf = KaplanMeierFitter()
     kmf.fit(T2, event_observed=E2, label="PARP1-low/" + gene + "mut")
-    kmf.plot_survival_function(ax=ax[2,column], show_censors = True, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[2,column], show_censors = False, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
     kmf3 = kmf
 
     kmf = KaplanMeierFitter()
     kmf.fit(T3, event_observed=E3, label="PARP1-low/" + gene + "wt")
-    kmf.plot_survival_function(ax=ax[2,column], show_censors = True, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
+    kmf.plot_survival_function(ax=ax[2,column], show_censors = False, ci_show=False, linestyle= 'solid',marker='x', markersize = 1)
     kmf4 = kmf
 
     ax[2,column].legend(fontsize=9, handlelength=1)
@@ -174,7 +180,7 @@ arm = 'Atezolizumab+Bevacizumab' # ATEZOLIZUMAB plus BEVACIZUMAB TREATMENT ARM
 column = 0
 letterkm = 'A'
 letterrisk = 'D'
-nr_decimals = 4
+nr_decimals = 3
 plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_decimals)
 
 arm = 'Sunitinib' #SUNITINIB
@@ -192,6 +198,10 @@ letterkm = 'C'
 letterrisk = 'F'
 nr_decimals = 8
 plotFig(cf_aux, fig, ax, column, arm, gene, group, letterkm, letterrisk, nr_decimals)
+
+plt.savefig('Figure_1_' + gene + '.png', dpi = 500)
+
+
 
 plt.savefig('Figure_1NOBORDER_' + gene + '.png', dpi = 500)
 plt.close()
